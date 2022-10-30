@@ -1,0 +1,83 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Add Docker Group
+      group: name=docker state=present
+    
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: true
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+
+    - name: Add Docker Signing Key
+      ansible.builtin.apt_key:
+        url: "https://download.docker.com/linux/ubuntu/gpg"
+        state: present
+
+    - name: Add Docker Repo
+      ansible.builtin.apt_repository:
+        repo: "deb https://download.docker.com/linux/ubuntu jammy stable"
+        state: present
+        filename: docker
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+
+    - name: Ensure jenkins directory on docker host
+      file:
+        state: directory
+        owner: 1000
+        group: 1000
+        path: /share/jenkins
+
+    - name: Pull the latest official jenkins docker image
+      docker_image:
+        name: "jenkins"
+        source: build
+        build:
+          path: /home/daryldiningrat/Course/ansible-demo
+        #force: yes
+        state: present
+      tags: deb
+    
+    - name: Create a container from the jenkins docker image
+      docker_container:
+        name: "jenkins-server"
+        image: "jenkins"
+        ports:
+            - "8080:8080"
+            - "50000:50000"
+        volumes:
+            - "/share/jenkins:/var/jenkins_home"
+        state: present
+        recreate: no
+      
+    #- name: Copy systemd service script to start and stop the jenkins container
+    #  copy: src=files/jenkins.service dest=/etc/systemd/system
+    #
+    #- name: Reload systemctl
+    #  shell: systemctl reload-or-restart docker-jenkins
+    #
+    #- name: Enable the docker-jenkins service
+    #  shell: systemctl enable docker-jenkins
