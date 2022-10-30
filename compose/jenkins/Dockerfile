@@ -31,4 +31,4 @@ RUN curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-c
 
 RUN usermod -aG docker jenkins
 
-USER jenkins
+USER root

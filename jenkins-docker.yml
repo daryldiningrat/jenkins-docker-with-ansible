@@ -56,7 +56,7 @@
         name: "jenkins"
         source: build
         build:
-          path: /home/daryldiningrat/Course/ansible-demo
+          path: /home/daryldiningrat/Course/jenkins-docker-with-ansible
         #force: yes
         state: present
       tags: deb
