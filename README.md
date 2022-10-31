@@ -1,7 +1,8 @@
 # Dockered Jenkins with Ansible
 
 Requirement:
-    - ansible installed
+    
+* ansible installed
 
 How to run:
 ```
