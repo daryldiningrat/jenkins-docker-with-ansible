@@ -1,1 +1,2 @@
-compose/jenkins_home/*
+compose/jenkins_home/
+jenkins_home/
